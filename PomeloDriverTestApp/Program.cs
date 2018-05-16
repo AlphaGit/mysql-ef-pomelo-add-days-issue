@@ -163,18 +163,11 @@ namespace PomeloDriverTestApp
 
             /* Result:
              fail: Microsoft.EntityFrameworkCore.Database.Command[20102]
-               Failed executing DbCommand (19ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+               Failed executing DbCommand (21ms) [Parameters=[@__Now_1='?'], CommandType='Text', CommandTimeout='30']
                SELECT `p`.`Id`, `p`.`CategoryId`, `p`.`Content`, `p`.`PublicationDate`, `p`.`Title`
                FROM `BlogPosts` AS `p`
-               LEFT JOIN `Category` AS `p.Category` ON `p`.`CategoryId` = `p.Category`.`Id`
-               WHERE ((`p.Category`.`Name` = `p`.`Title`) OR (`p.Category`.`Name` IS NULL AND `p`.`Title` IS NULL)) AND (`p`.`PublicationDate` < DATE_ADD((
-               SELECT `p1`.`PublicationDate`
-               FROM `BlogPosts` AS `p1`
-               WHERE (`p1`.`CategoryId` = `p`.`CategoryId`) OR (`p1`.`CategoryId` IS NULL AND `p`.`CategoryId` IS NULL)
-               ORDER BY `p1`.`PublicationDate` DESC
-               LIMIT 1
-               ), INTERVAL -__daysDifferenceFromLatest_0 day))
-               MySql.Data.MySqlClient.MySqlException (0x80004005): Unknown column '__daysDiff_0' in 'where clause' ---> MySql.Data.MySqlClient.MySqlException (0x80004005): Unknown column '__daysDifferenceFromLatest_0' in 'where clause'*/
+               WHERE DATE_ADD(`p`.`PublicationDate`, INTERVAL __daysDiff_0 day) < @__Now_1
+               */
         }
 
         class BlogPost
@@ -184,12 +177,6 @@ namespace PomeloDriverTestApp
             public string Content { get; set; }
             public Category Category { get; set; }
             public DateTimeOffset PublicationDate { get; set; }
-        }
-
-        class Tag
-        {
-            public Guid Id { get; set; }
-            public string Name { get; set; }
         }
 
         class Category
